@@ -40,7 +40,7 @@ const MainPage = () => {
 					<h1 className={`${scheherazadeFont.className} text-xl`}>
 						ٱلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ ٱللَّٰهِ وَبَرَكَاتُهُ
 					</h1>
-					<h3 className={`${playfairFont.className} text-sm font-semibold`}>
+					<h3 className={`${playfairFont.className} text-sm`}>
 						Dengan memohon Rahmat <span className="italic">Allah ﷻ</span>, Kami
 						bermaksud menyelenggarakan akad pernikahan putra-putri kami
 					</h3>
