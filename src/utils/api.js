@@ -1,7 +1,7 @@
 // src/utils/api.js
 import axios from "axios"
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || ""
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || ""
 
 export const getGuestBySlug = async (slug) => {
 	try {
