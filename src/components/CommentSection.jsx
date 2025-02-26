@@ -1,10 +1,11 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
-import { playfairFont, imperialFont } from "@/styles/font"
+import React, { useState } from "react"
+import { playfairFont, gwendolynFont } from "@/styles/font"
 import { useCommentsListQuery } from "@/hooks/useGuestComment"
 import { useMutation } from "@tanstack/react-query"
 import { postComment } from "@/utils/api"
+
 // Helper function to get initials from name
 const getInitials = (name) => {
 	if (!name) return "?"
@@ -26,18 +27,23 @@ const getAvatarColor = (name) => {
 		hash = name.charCodeAt(i) + ((hash << 5) - hash)
 	}
 
-	// Convert to hex color - using a palette of green/teal shades
+	// Convert to hex color - using a more diverse color palette
 	const colors = [
-		"#156f56",
-		"#1a8a6c",
-		"#20a583",
-		"#25bf99",
-		"#2ad9af",
-		"#30f3c5",
-		"#35ffe0",
-		"#3ae8cb",
-		"#40d2b7",
-		"#45bca2",
+		"#156f56", // emerald
+		"#1e40af", // blue
+		"#b91c1c", // red
+		"#7e22ce", // purple
+		"#0e7490", // cyan
+		"#c2410c", // orange
+		"#4d7c0f", // lime
+		"#86198f", // pink
+		"#1e3a8a", // indigo
+		"#a16207", // amber
+		"#0f766e", // teal
+		"#713f12", // brown
+		"#365314", // green
+		"#831843", // rose
+		"#4338ca", // violet
 	]
 
 	const index = Math.abs(hash) % colors.length
@@ -57,20 +63,22 @@ const CommentSection = () => {
 	const handleRefresh = () => {
 		refetch()
 	}
+
 	const postCommentMutation = useMutation({
 		mutationFn: postComment,
 	})
 
-	// Placeholder for submit function - you'll need to implement this with your API
+	// Submit function with API integration
 	const handleSubmit = (e) => {
 		e.preventDefault()
 		const body = { name: newComment.name, content: newComment.content }
-		// Submit logic here
-		console.log("Submitting comment:", newComment)
+
 		try {
 			postCommentMutation.mutate(body, {
-				onSuccess: async (response) => {
+				onSuccess: async () => {
 					refetch()
+					// Reset form
+					setNewComment({ name: "", content: "" })
 				},
 				onError: (error) => {
 					console.log(error)
@@ -79,9 +87,6 @@ const CommentSection = () => {
 		} catch (error) {
 			console.error(error)
 		}
-
-		// Reset form
-		setNewComment({ name: "", content: "" })
 	}
 
 	return (
@@ -91,7 +96,7 @@ const CommentSection = () => {
 			{/* Header */}
 			<div className="bg-text-primary text-white p-4 rounded-t-lg">
 				<h2
-					className={`${imperialFont.className} text-2xl font-semibold text-center`}
+					className={`${gwendolynFont.className} text-4xl font-bold text-center`}
 				>
 					Ucapan & Doa
 				</h2>
@@ -131,51 +136,60 @@ const CommentSection = () => {
 							</p>
 						</div>
 					) : (
-						data.data.map((comment) => (
-							<div
-								key={comment.id}
-								className="flex items-start gap-3 p-4 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors duration-200"
-							>
+						data.data.map((comment) => {
+							const avatarColor = getAvatarColor(comment.name)
+							return (
 								<div
-									className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg"
-									style={{ backgroundColor: getAvatarColor(comment.name) }}
+									key={comment.id}
+									className="flex items-start gap-3 p-4 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors duration-200"
 								>
-									{getInitials(comment.name)}
-								</div>
-								<div className="flex-1 text-text-primary">
-									<div className="flex justify-between items-center">
-										<p className="font-semibold">{comment.name}</p>
-										<p className="text-xs text-gray-500">
-											{comment.created_at
-												? new Date(comment.created_at).toLocaleDateString()
-												: ""}
+									<div
+										className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg"
+										style={{ backgroundColor: avatarColor }}
+									>
+										<span style={{ color: "white" }}>
+											{getInitials(comment.name)}
+										</span>
+									</div>
+									<div className="flex-1 text-text-primary">
+										<div className="flex justify-between text-sm items-center">
+											<p className="font-semibold">
+												<span style={{ color: avatarColor }}>
+													{comment.name}
+												</span>
+											</p>
+											<p className="text-xs text-gray-500">
+												{comment.created_at
+													? new Date(comment.created_at).toLocaleDateString()
+													: ""}
+											</p>
+										</div>
+										<p className="mt-1 text-sm whitespace-pre-wrap">
+											{comment.content}
 										</p>
 									</div>
-									<p className="mt-1 text-sm whitespace-pre-wrap">
-										{comment.content}
-									</p>
 								</div>
-							</div>
-						))
+							)
+						})
 					)}
 				</div>
 			</div>
 
 			{/* Comment form */}
-			<div className="p-4 border-t border-emerald-100">
+			<div className="p-4 border-t border-emerald-100 text-text-primary">
 				<form onSubmit={handleSubmit} className="space-y-3">
 					<div>
 						<label
 							htmlFor="name"
-							className="block text-sm font-medium text-text-primary mb-1"
+							className="block font-medium text-text-primary mb-1"
 						>
 							Nama
 						</label>
 						<input
 							type="text"
 							id="name"
-							className="w-full px-3 py-2 border border-emerald-200 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
-							placeholder="Masukkan nama Anda"
+							className="w-full text-sm px-3 py-2 border bg-emerald-100 border-emerald-200 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+							placeholder="Masukkan nama kamu"
 							value={newComment.name}
 							onChange={(e) =>
 								setNewComment({ ...newComment, name: e.target.value })
@@ -186,15 +200,15 @@ const CommentSection = () => {
 					<div>
 						<label
 							htmlFor="content"
-							className="block text-sm font-medium text-text-primary mb-1"
+							className="block font-medium text-text-primary mb-1"
 						>
 							Ucapan & Doa
 						</label>
 						<textarea
 							id="content"
 							rows="3"
-							className="w-full px-3 py-2 border border-emerald-200 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
-							placeholder="Tuliskan ucapan dan doa Anda"
+							className="w-full text-sm px-3 py-2 border bg-emerald-100 border-emerald-200 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+							placeholder="Doakan kebaikan untuk kita yaaa..."
 							value={newComment.content}
 							onChange={(e) =>
 								setNewComment({ ...newComment, content: e.target.value })
@@ -205,8 +219,16 @@ const CommentSection = () => {
 					<button
 						type="submit"
 						className="w-full bg-text-primary hover:bg-emerald-800 text-white py-2 rounded-md transition-colors duration-200"
+						disabled={postCommentMutation.isPending}
 					>
-						Kirim Ucapan
+						{postCommentMutation.isPending ? (
+							<span className="flex items-center justify-center">
+								<span className="inline-block animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></span>
+								Mengirim...
+							</span>
+						) : (
+							"Kirim Ucapan"
+						)}
 					</button>
 				</form>
 			</div>
