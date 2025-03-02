@@ -59,7 +59,9 @@ export default function Home() {
 			<div className="relative h-screen w-full bg-[url('/latar.png')] bg-cover bg-center bg-no-repeat flex flex-col">
 				{/* Top-left floral decoration */}
 				<div className="absolute top-0 w-full">
-					<img
+					<Image
+						width={100}
+						height={100}
 						src="/floral-top.png"
 						alt="Floral decoration"
 						className="w-full object-contain"
@@ -68,7 +70,9 @@ export default function Home() {
 
 				{/* Bottom-right floral decoration */}
 				<div className="absolute bottom-0 w-full">
-					<img
+					<Image
+						width={100}
+						height={100}
 						src="/floral-bottom.png"
 						alt="Floral decoration"
 						className="w-full object-contain"
