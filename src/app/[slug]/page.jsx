@@ -5,15 +5,55 @@ import Image from "next/image"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { useGuestBySlugQuery } from "@/hooks/useGuestComment"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 
 export default function Home() {
 	const { slug } = useParams()
-	const { data, isLoading, refetch } = useGuestBySlugQuery(slug)
-
+	const router = useRouter()
+	const { data, isLoading, error, isError } = useGuestBySlugQuery(slug)
 	const [isHovered, setIsHovered] = useState(false)
+	const [showNotFound, setShowNotFound] = useState(false)
+
+	useEffect(() => {
+		// Jika error atau data menunjukkan tidak ada data
+		if ((isError || (data && !data.data)) && !isLoading) {
+			setShowNotFound(true)
+			// Redirect ke halaman utama setelah beberapa detik
+			const timer = setTimeout(() => {
+				router.push("/")
+			}, 3000)
+			return () => clearTimeout(timer)
+		}
+	}, [data, isError, isLoading, router])
+
 	const entranceIn =
 		"motion-opacity-in-0 motion-translate-y-in-100 motion-blur-in-md motion-duration-4000"
+
+	if (showNotFound) {
+		return (
+			<div className="h-screen w-full flex flex-col items-center justify-center bg-[url('/latar.png')] bg-cover bg-center bg-no-repeat p-4">
+				<div className="bg-white/80 rounded-lg p-6 max-w-md text-center shadow-lg">
+					<h1
+						className={`${playfairFont.className} text-2xl font-bold text-text-primary mb-4`}
+					>
+						Undangan Tidak Ditemukan
+					</h1>
+					<p className={`${playfairFont.className} mb-6`}>
+						Maaf, undangan dengan tautan ini tidak ditemukan. Anda akan
+						dialihkan ke halaman utama dalam beberapa detik.
+					</p>
+					<Link href="/undangan">
+						<button
+							className={`${playfairFont.className} text-sm flex items-center justify-center mx-auto motion-preset-pulse px-6 py-2 border-2 text-white hover:text-text-primary border-emerald-700 hover:border-emerald-100 bg-text-primary rounded-full hover:bg-emerald-100 transition-colors`}
+						>
+							Menuju Halaman Utama
+						</button>
+					</Link>
+				</div>
+			</div>
+		)
+	}
+
 	return (
 		<div className="@container max-w-sm mx-auto rounded-lg shadow-2xl">
 			<div className="relative h-screen w-full bg-[url('/latar.png')] bg-cover bg-center bg-no-repeat flex flex-col">
@@ -62,11 +102,10 @@ export default function Home() {
 					</h2>
 
 					<p
-						className={`${playfairFont.className} text-lg font-medium bg-text-primary `}
+						className={`${playfairFont.className} text-lg font-medium bg-text-primary text-white px-4 py-1 rounded-md`}
 					>
 						Rabu, 16 April 2025
 					</p>
-					<DateCounter />
 
 					<div
 						className={`flex flex-col w-full ${entranceIn} ${playfairFont.className} italic`}
@@ -77,13 +116,13 @@ export default function Home() {
 							<div className="text-center py-4">
 								<div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-700"></div>
 							</div>
-						) : (
+						) : data && data.data ? (
 							<h1 className={`text-xl font-extrabold italic`}>
 								{data.data.name}
 							</h1>
-						)}
+						) : null}
 					</div>
-					<Link href="/main">
+					<Link href="/undangan">
 						<button
 							className={`${playfairFont.className} text-sm flex items-center motion-preset-pulse px-6 py-2 border-2 text-white hover:text-text-primary border-emerald-700 hover:border-emerald-100 bg-text-primary rounded-full hover:bg-emerald-100 transition-colors`}
 							onMouseEnter={() => setIsHovered(true)}
