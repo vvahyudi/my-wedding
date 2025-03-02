@@ -45,7 +45,7 @@ const MainPage = () => {
 						ٱلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ ٱللَّٰهِ وَبَرَكَاتُهُ
 					</h1>
 					<h3 className={`${playfairFont.className} text-base`}>
-						Kami mohon do'a dan restu atas pernikahan kami
+						Kami mohon do&apos;a dan restu atas pernikahan kami
 					</h3>
 					<div
 						className={`flex flex-col items-center text-center  ${playfairFont.className} italic`}
