@@ -2,7 +2,7 @@
 
 import React, { useState } from "react"
 import { playfairFont } from "@/styles/font"
-import { useGuestsList } from "@/hooks/useGuests"
+import { useGuestsList, useDeleteGuestBySlug } from "@/hooks/useGuests"
 import WhatsAppButton from "./WhatsAppButton"
 import { Search } from "lucide-react"
 
@@ -21,6 +21,22 @@ const GuestList = () => {
 		sortBy,
 		sortType,
 	})
+
+	const { mutate: deleteGuestBySlug, isLoading: isDeleting } =
+		useDeleteGuestBySlug({
+			onSuccess: () => {
+				alert("Guest deleted successfully!")
+			},
+			onError: (error) => {
+				alert(error.message || "Failed to delete guest.")
+			},
+		})
+
+	const handleDelete = (slug) => {
+		if (confirm("Are you sure you want to delete this guest?")) {
+			deleteGuestBySlug(slug)
+		}
+	}
 
 	const handleSearch = (e) => {
 		e.preventDefault()
@@ -155,6 +171,12 @@ const GuestList = () => {
 										>
 											WhatsApp
 										</WhatsAppButton>
+										<button
+											onClick={() => handleDelete(guest.slug)}
+											className="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-700 transition-colors"
+										>
+											Delete
+										</button>
 									</div>
 								</div>
 							))
@@ -226,6 +248,12 @@ const GuestList = () => {
 													>
 														WhatsApp
 													</WhatsAppButton>
+													<button
+														onClick={() => handleDelete(guest.slug)}
+														className="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-700 transition-colors"
+													>
+														Delete
+													</button>
 												</div>
 											</td>
 										</tr>

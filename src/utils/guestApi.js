@@ -95,7 +95,7 @@ export const getGuestBySlug = async (slug) => {
  * @param {string} slug - Guest slug
  * @returns {Promise<Object>} - Deleted guest data
  */
-export const deleteGuest = async (slug) => {
+export const deleteGuestBySlug = async (slug) => {
 	try {
 		const response = await api.delete(`/guest/${slug}`)
 		return response.data

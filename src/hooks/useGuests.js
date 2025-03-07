@@ -1,5 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { fetchGuests, addGuest, getGuestBySlug } from "@/utils/guestApi"
+import {
+	fetchGuests,
+	addGuest,
+	getGuestBySlug,
+	deleteGuestBySlug,
+} from "@/utils/guestApi"
 
 /**
  * Hook for fetching guests with filtering and pagination
@@ -60,5 +65,20 @@ export const useGuestBySlug = (slug, { enabled = true } = {}) => {
 		queryKey: ["guest", slug],
 		queryFn: () => getGuestBySlug(slug),
 		enabled: !!slug && enabled,
+	})
+}
+
+export const useDeleteGuestBySlug = ({ onSuccess, onError } = {}) => {
+	const queryClient = useQueryClient()
+
+	return useMutation({
+		mutationFn: deleteGuestBySlug,
+		onSuccess: (data) => {
+			queryClient.invalidateQueries({ queryKey: ["guests"] })
+			if (onSuccess) onSuccess(data)
+		},
+		onError: (error) => {
+			if (onError) onError(error)
+		},
 	})
 }
