@@ -1,8 +1,10 @@
 "use client"
 
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { deleteToken } from "./login/action"
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -15,6 +17,23 @@ const queryClient = new QueryClient({
 })
 
 export default function AdminLayout({ children }) {
+	const router = useRouter()
+	const [token, setToken] = useState(null)
+	const [isMounted, setIsMounted] = useState(false)
+
+	useEffect(() => {
+		setIsMounted(true)
+		const getToken = localStorage.getItem("token")
+		setToken(getToken)
+	}, [])
+
+	const handleLogout = () => {
+		localStorage.removeItem("token")
+		deleteToken()
+		setToken(null)
+		router.push("/admin/login")
+	}
+
 	return (
 		<QueryClientProvider client={queryClient}>
 			<div className="min-h-screen bg-gray-50">
@@ -34,6 +53,15 @@ export default function AdminLayout({ children }) {
 							>
 								View Site
 							</Link>
+
+							{token && (
+								<button
+									onClick={handleLogout}
+									className="px-3 py-2 rounded-md hover:bg-emerald-800 transition-colors"
+								>
+									Logout
+								</button>
+							)}
 						</nav>
 					</div>
 				</header>

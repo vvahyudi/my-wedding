@@ -1,6 +1,29 @@
-// Guest API utility functions
+// Guest API utility functions with Axios
+import axios from "axios"
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || ""
+
+// Create axios instance with default configuration
+const api = axios.create({
+	baseURL: API_URL,
+})
+
+// Add a request interceptor to include the token in all requests
+api.interceptors.request.use(
+	(config) => {
+		// Get token from localStorage
+		const token = localStorage.getItem("token") // Use your actual token key
+
+		if (token) {
+			config.headers.Authorization = `Bearer ${token}`
+		}
+
+		return config
+	},
+	(error) => {
+		return Promise.reject(error)
+	},
+)
 
 /**
  * Fetch guests with pagination and filtering
@@ -19,17 +42,19 @@ export const fetchGuests = async ({
 	sortBy = "name",
 	sortType = "asc",
 }) => {
-	const response = await fetch(
-		`${API_URL}/guest?search=${search}&sort=${sortBy}.${sortType}&limit=${limit}&page=${page}`,
-		{ method: "GET" },
-	)
-
-	if (!response.ok) {
-		const errorData = await response.json()
-		throw new Error(errorData.message || "Failed to fetch guests")
+	try {
+		const response = await api.get("/guest", {
+			params: {
+				search,
+				sort: `${sortBy}.${sortType}`,
+				limit,
+				page,
+			},
+		})
+		return response.data
+	} catch (error) {
+		throw new Error(error.response?.data?.message || "Failed to fetch guests")
 	}
-
-	return await response.json()
 }
 
 /**
@@ -41,20 +66,12 @@ export const fetchGuests = async ({
  * @returns {Promise<Object>} - Added guest data
  */
 export const addGuest = async (guestData) => {
-	const response = await fetch(`${API_URL}/guest`, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify(guestData),
-	})
-
-	if (!response.ok) {
-		const errorData = await response.json()
-		throw new Error(errorData.message || "Failed to add guest")
+	try {
+		const response = await api.post("/guest", guestData)
+		return response.data
+	} catch (error) {
+		throw new Error(error.response?.data?.message || "Failed to add guest")
 	}
-
-	return await response.json()
 }
 
 /**
@@ -63,14 +80,29 @@ export const addGuest = async (guestData) => {
  * @returns {Promise<Object>} - Guest data
  */
 export const getGuestBySlug = async (slug) => {
-	const response = await fetch(`${API_URL}/guest/${slug}`, {
-		method: "GET",
-	})
-
-	if (!response.ok) {
-		const errorData = await response.json()
-		throw new Error(errorData.message || `Guest with slug "${slug}" not found`)
+	try {
+		const response = await api.get(`/guest/${slug}`)
+		return response.data
+	} catch (error) {
+		throw new Error(
+			error.response?.data?.message || `Guest with slug "${slug}" not found`,
+		)
 	}
+}
 
-	return await response.json()
+/**
+ * Delete a guest by slug
+ * @param {string} slug - Guest slug
+ * @returns {Promise<Object>} - Deleted guest data
+ */
+export const deleteGuest = async (slug) => {
+	try {
+		const response = await api.delete(`/guest/${slug}`)
+		return response.data
+	} catch (error) {
+		throw new Error(
+			error.response?.data?.message ||
+				`Failed to delete guest with slug "${slug}"`,
+		)
+	}
 }

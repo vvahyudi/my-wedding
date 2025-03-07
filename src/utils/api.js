@@ -67,3 +67,22 @@ export const postComment = async (body) => {
 		throw error
 	}
 }
+
+export const login = async (body) => {
+	try {
+		const response = await axios.post(`${API_URL}/auth/login`, body)
+		return response.data
+	} catch (error) {
+		if (!response.ok) {
+			throw new Error(response.statusText)
+		}
+	}
+}
+export const logout = async (body) => {
+	try {
+		const response = await axios.post(`${API_URL}/auth/logout`, body)
+		return response.data
+	} catch (error) {
+		console.error(error)
+	}
+}

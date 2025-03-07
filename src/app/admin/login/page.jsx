@@ -2,14 +2,25 @@
 
 import React, { useState } from "react"
 import Image from "next/image"
-import Link from "next/link"
 import { playfairFont, gwendolynFont } from "@/styles/font"
 import { Eye, EyeOff, LogIn } from "lucide-react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useMutation } from "@tanstack/react-query"
+import { login } from "@/utils/api"
+import { updateToken } from "./action"
 
 export default function LoginPage() {
-	const [username, setUsername] = useState("")
-	const [password, setPassword] = useState("")
+	const router = useRouter()
+
+	const [formData, setFormData] = useState({
+		username: "",
+		password: "",
+	})
 	const [showPassword, setShowPassword] = useState(false)
+	const loginMutation = useMutation({
+		mutationFn: login,
+	})
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState("")
 
@@ -17,8 +28,18 @@ export default function LoginPage() {
 		e.preventDefault()
 		setError("")
 		setLoading(true)
-
 		try {
+			loginMutation.mutate(formData, {
+				onSuccess: async (response) => {
+					const token = response.data.token
+					localStorage.setItem("token", token)
+					await updateToken(token)
+					router.push("/admin/guests")
+				},
+				onError: async (error) => {
+					setError(error.message)
+				},
+			})
 			// Here you would typically make an API call to your backend
 			// For example:
 			// const response = await fetch('/api/auth/login', {
@@ -33,12 +54,6 @@ export default function LoginPage() {
 
 			// const data = await response.json()
 			// Handle successful login - e.g., store token and redirect
-
-			// Simulate API call
-			await new Promise((resolve) => setTimeout(resolve, 1000))
-
-			// Redirect to main page after successful login
-			window.location.href = "/admin/guests"
 		} catch (error) {
 			setError("Invalid username or password. Please try again.")
 		} finally {
@@ -87,8 +102,10 @@ export default function LoginPage() {
 								required
 								className="w-full px-3 py-2 border border-emerald-300 bg-emerald-100 text-text-primary rounded-md focus:outline-none focus:ring-2 focus:ring-text-primary"
 								placeholder="Enter your username"
-								value={username}
-								onChange={(e) => setUsername(e.target.value)}
+								value={formData.username}
+								onChange={(e) =>
+									setFormData({ ...formData, username: e.target.value })
+								}
 							/>
 						</div>
 
@@ -106,8 +123,10 @@ export default function LoginPage() {
 									required
 									className="w-full px-3 py-2 border border-emerald-300 bg-emerald-100 text-text-primary rounded-md focus:outline-none focus:ring-2 focus:ring-text-primary"
 									placeholder="Enter your password"
-									value={password}
-									onChange={(e) => setPassword(e.target.value)}
+									value={formData.password}
+									onChange={(e) =>
+										setFormData({ ...formData, password: e.target.value })
+									}
 								/>
 								<button
 									type="button"
