@@ -1,12 +1,49 @@
-import React from "react"
+"use client"
+import React, { useEffect, useState } from "react"
 import Image from "next/image"
 import { gwendolynFont, scheherazadeFont, playfairFont } from "@/styles/font"
 import { Map, MapPinned } from "lucide-react"
 import CommentSection from "@/components/CommentSection"
+import { MapContainer } from "@/components/map"
 
 const MainPage = () => {
+	const [isLoading, setIsLoading] = useState(true)
+	useEffect(() => {
+		// Show welcome screen after brief delay to give audio a chance to load
+		const timer = setTimeout(() => {
+			setIsLoading(false)
+		}, 2000)
+	}, [])
 	const entranceIn =
 		"motion-opacity-in-0 motion-translate-y-in-100 motion-blur-in-md motion-duration-3000"
+	const [markers, setMarkers] = useState([
+		{ position: [51.505, -0.09], title: "London" },
+	])
+	const handleMapClick = (e) => {
+		const { lat, lng } = e.latlng
+		setMarkers([
+			...markers,
+			{
+				position: [lat, lng],
+				title: `Marker ${markers.length + 1}`,
+			},
+		])
+	}
+	if (isLoading) {
+		return (
+			<div className="flex items-center justify-center min-h-screen bg-text-primary">
+				<div className="text-center text-white p-8 max-w-md">
+					<h1 className={`${gwendolynFont.className} text-5xl mb-6`}>
+						Ati & Yudi
+					</h1>
+					<p className={`${playfairFont.className} mb-8`}>
+						We're preparing our wedding invitation for you...
+					</p>
+					<div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent mx-auto"></div>
+				</div>
+			</div>
+		)
+	}
 	return (
 		<div className="max-w-md rounded-lg p-4 shadow-xl h-full @container mx-auto bg-foreground">
 			<div className="flex flex-col gap-6">
@@ -77,7 +114,7 @@ const MainPage = () => {
 							Ahmad Wahyudi
 						</h3>
 						<span className="text-base">
-							Putra kedua Bpk. Ach. Amam & Ibu Raudatul Jannah
+							Putra kedua Bpk. Ach. Amam & Ibu Srf. Raudatul Jannah Al-Khered
 						</span>
 					</div>
 				</div>
@@ -132,11 +169,16 @@ const MainPage = () => {
 							>
 								Dsn. Pangelen, Ds. Prenduan, Kec. Pragaan, Kab. Sumenep
 							</p>
+							<Map />
 
-							<button className="flex gap-1 w-32 justify-center bg-text-primary text-white rounded-lg p-2 hover:scale-110 focus:scale-110 transition-transform shadow-lg">
-								<Map />
-								<span className={`${playfairFont.className} `}>Buka Map</span>
-							</button>
+							<MapContainer
+								buttonText="Buka Map"
+								closeButtonText="Tutup Map"
+								center={[51.505, -0.09]}
+								zoom={13}
+								markers={markers}
+								onClick={handleMapClick}
+							/>
 						</div>
 					</div>
 				</div>

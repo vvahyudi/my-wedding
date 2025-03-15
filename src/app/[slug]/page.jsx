@@ -28,7 +28,21 @@ export default function Home() {
 
 	const entranceIn =
 		"motion-opacity-in-0 motion-translate-y-in-100 motion-blur-in-md motion-duration-4000"
-
+	if (isLoading) {
+		return (
+			<div className="flex items-center justify-center min-h-screen bg-text-primary">
+				<div className="text-center text-white p-8 max-w-md">
+					<h1 className={`${gwendolynFont.className} text-5xl mb-6`}>
+						Ati & Yudi
+					</h1>
+					<p className={`${playfairFont.className} mb-8`}>
+						We're preparing our wedding invitation for you...
+					</p>
+					<div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent mx-auto"></div>
+				</div>
+			</div>
+		)
+	}
 	if (showNotFound) {
 		return (
 			<div className="h-screen w-full flex flex-col items-center justify-center bg-[url('/latar.png')] bg-cover bg-center bg-no-repeat p-4">
@@ -42,7 +56,7 @@ export default function Home() {
 						Maaf, undangan dengan tautan ini tidak ditemukan. Anda akan
 						dialihkan ke halaman utama dalam beberapa detik.
 					</p>
-					<Link href="/undangan">
+					<Link href="/">
 						<button
 							className={`${playfairFont.className} text-sm flex items-center justify-center mx-auto motion-preset-pulse px-6 py-2 border-2 text-white hover:text-text-primary border-emerald-700 hover:border-emerald-100 bg-text-primary rounded-full hover:bg-emerald-100 transition-colors`}
 						>
