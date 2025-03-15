@@ -37,7 +37,7 @@ const MainPage = () => {
 						Ati & Yudi
 					</h1>
 					<p className={`${playfairFont.className} mb-8`}>
-						We're preparing our wedding invitation for you...
+						We&apos;re preparing our wedding invitation for you...
 					</p>
 					<div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent mx-auto"></div>
 				</div>
