@@ -6,31 +6,27 @@ import { Music, PauseCircle, PlayCircle } from "lucide-react"
 const AudioPlayer = ({ audioSrc = "/audio/wedding-song.mp3" }) => {
 	const [isPlaying, setIsPlaying] = useState(false)
 	const [isLoaded, setIsLoaded] = useState(false)
-	const audioRef = useRef(null)
+	const audioRef = useRef(new Audio(audioSrc))
 
 	useEffect(() => {
-		// Create audio element
-		audioRef.current = new Audio(audioSrc)
+		const audio = audioRef.current
+		audio.loop = true
 
-		// Set up event listeners
-		audioRef.current.addEventListener("canplaythrough", () => {
-			setIsLoaded(true)
-		})
+		// Event listener for when audio is ready
+		const handleCanPlay = () => setIsLoaded(true)
+		const handleEnded = () => {
+			audio.currentTime = 0
+			audio.play()
+		}
 
-		audioRef.current.addEventListener("ended", () => {
-			// Loop the audio
-			audioRef.current.currentTime = 0
-			audioRef.current.play()
-		})
+		audio.addEventListener("canplaythrough", handleCanPlay)
+		audio.addEventListener("ended", handleEnded)
 
-		// Clean up on component unmount
 		return () => {
-			if (audioRef.current) {
-				audioRef.current.pause()
-				audioRef.current.src = ""
-				audioRef.current.remove()
-				audioRef.current = null
-			}
+			audio.pause()
+			audio.src = ""
+			audio.removeEventListener("canplaythrough", handleCanPlay)
+			audio.removeEventListener("ended", handleEnded)
 		}
 	}, [audioSrc])
 
@@ -42,7 +38,6 @@ const AudioPlayer = ({ audioSrc = "/audio/wedding-song.mp3" }) => {
 		} else {
 			audioRef.current.play()
 		}
-
 		setIsPlaying(!isPlaying)
 	}
 

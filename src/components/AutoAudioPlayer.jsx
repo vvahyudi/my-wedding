@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useRef, useCallback } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { Music, Volume2, VolumeX } from "lucide-react"
 
 const AutoAudioPlayer = ({
@@ -11,111 +11,64 @@ const AutoAudioPlayer = ({
 	const [isPlaying, setIsPlaying] = useState(false)
 	const [isMuted, setIsMuted] = useState(false)
 	const audioRef = useRef(null)
-	const playAttemptRef = useRef(false)
-	const interactionEvents = [
-		"click",
-		"touchstart",
-		"keydown",
-		"scroll",
-		"mousemove",
-	]
-
-	// Function to attempt playing audio - wrapped in useCallback
-	const playAudio = useCallback(() => {
-		if (!audioRef.current || playAttemptRef.current) return
-
-		playAttemptRef.current = true
-
-		const playPromise = audioRef.current.play()
-		if (playPromise !== undefined) {
-			playPromise
-				.then(() => {
-					setIsPlaying(true)
-					console.log("Audio playing successfully")
-					// Remove event listeners since we've succeeded
-					removeEventListeners()
-				})
-				.catch((error) => {
-					console.log("Autoplay prevented:", error)
-					// Reset flag so we can try again on next user interaction
-					playAttemptRef.current = false
-					setIsPlaying(false)
-				})
-		}
-	}, []) // Empty dependency array as it only uses refs and setters
-
-	// Set up and remove event listeners for user interaction - wrapped in useCallback
-	const setupEventListeners = useCallback(() => {
-		interactionEvents.forEach((event) => {
-			document.addEventListener(event, playAudio, { once: true })
-		})
-	}, [playAudio, interactionEvents])
-
-	const removeEventListeners = useCallback(() => {
-		interactionEvents.forEach((event) => {
-			document.removeEventListener(event, playAudio)
-		})
-	}, [playAudio, interactionEvents])
 
 	useEffect(() => {
-		// Create audio element
-		audioRef.current = new Audio(audioSrc)
-		audioRef.current.loop = true
-		audioRef.current.volume = initialVolume
+		// Ensure audioRef.current is initialized before accessing properties
+		if (!audioRef.current) {
+			audioRef.current = new Audio(audioSrc)
+		}
 
-		// When component mounts, try to play immediately
-		// (this will likely fail on most browsers but we try anyway)
-		playAudio()
+		const audio = audioRef.current
+		audio.loop = true
+		audio.volume = initialVolume
 
-		// Set up event listeners to attempt playing after user interaction
-		setupEventListeners()
+		const playAudio = () => {
+			audio
+				.play()
+				.then(() => setIsPlaying(true))
+				.catch(() => setIsPlaying(false))
+		}
 
-		// This is a fallback for browsers that block autoplay
-		// We'll try to play the audio once more after a short delay
-		const delayedPlayAttempt = setTimeout(() => {
-			if (!isPlaying) {
-				playAudio()
-			}
-		}, 1000)
+		// Set up interaction events for autoplay
+		const interactionEvents = ["click", "touchstart", "keydown", "scroll"]
+		const enableAudio = () => {
+			playAudio()
+			interactionEvents.forEach((event) =>
+				document.removeEventListener(event, enableAudio),
+			)
+		}
 
-		// Clean up on unmount
+		interactionEvents.forEach((event) =>
+			document.addEventListener(event, enableAudio),
+		)
+
 		return () => {
-			clearTimeout(delayedPlayAttempt)
-			removeEventListeners()
-
 			if (audioRef.current) {
 				audioRef.current.pause()
 				audioRef.current.src = ""
-				audioRef.current = null
 			}
+			interactionEvents.forEach((event) =>
+				document.removeEventListener(event, enableAudio),
+			)
 		}
-	}, [
-		audioSrc,
-		initialVolume,
-		playAudio,
-		setupEventListeners,
-		removeEventListeners,
-		isPlaying,
-	])
+	}, [audioSrc, initialVolume])
 
 	// Toggle mute/unmute
 	const toggleSound = () => {
-		if (!audioRef.current) return
+		const audio = audioRef.current
+		if (!audio) return
 
 		if (!isPlaying) {
-			// Try playing again if it's not playing
-			playAudio()
+			audio.play()
+			setIsPlaying(true)
+			setIsMuted(false)
 		} else {
-			// Toggle mute/unmute if already playing
-			audioRef.current.muted = !audioRef.current.muted
+			audio.muted = !audio.muted
 			setIsMuted(!isMuted)
 		}
 	}
 
-	// Hidden audio player without controls if showControls is false
-	if (!showControls) {
-		return null
-	}
+	if (!showControls) return null
 
 	return (
 		<button

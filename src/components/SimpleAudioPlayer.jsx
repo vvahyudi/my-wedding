@@ -1,87 +1,51 @@
 "use client"
 
-import React, { useState, useEffect, useRef, useCallback } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { Music, Volume2, VolumeX } from "lucide-react"
 
 const SimpleAudioPlayer = ({ audioSrc = "/audio/wedding-song.mp3" }) => {
 	const [isPlaying, setIsPlaying] = useState(false)
 	const [isMuted, setIsMuted] = useState(false)
 	const [autoplayAttempted, setAutoplayAttempted] = useState(false)
-	const audioRef = useRef(null)
-
-	// Function to attempt autoplay - wrapped in useCallback
-	const attemptAutoplay = useCallback(() => {
-		if (!audioRef.current || autoplayAttempted) return
-
-		// Set autoplay attempted flag
-		setAutoplayAttempted(true)
-
-		// Attempt to play
-		const playPromise = audioRef.current.play()
-
-		if (playPromise !== undefined) {
-			playPromise
-				.then(() => {
-					// Autoplay started successfully
-					setIsPlaying(true)
-				})
-				.catch(() => {
-					// Autoplay was prevented by browser
-					setIsPlaying(false)
-				})
-		}
-	}, [autoplayAttempted])
+	const audioRef = useRef(new Audio(audioSrc))
 
 	useEffect(() => {
-		audioRef.current = new Audio(audioSrc)
+		const audio = audioRef.current
+		audio.loop = true
+		audio.volume = 0.5
 
-		// Set initial volume
-		audioRef.current.volume = 0.5
+		const playAudio = () => {
+			if (autoplayAttempted) return
 
-		// Set audio to loop
-		audioRef.current.loop = true
-
-		// First autoplay attempt when component mounts
-		attemptAutoplay()
-
-		// Set up event listeners for user interaction to enable autoplay
-		const handleUserInteraction = () => {
-			if (!isPlaying) {
-				attemptAutoplay()
-			}
+			setAutoplayAttempted(true)
+			audio
+				.play()
+				.then(() => setIsPlaying(true))
+				.catch(() => setIsPlaying(false))
 		}
 
-		// These events are likely to indicate user interaction
-		document.addEventListener("click", handleUserInteraction)
-		document.addEventListener("touchstart", handleUserInteraction)
-		document.addEventListener("keydown", handleUserInteraction)
-		document.addEventListener("scroll", handleUserInteraction)
+		const interactionEvents = ["click", "touchstart", "keydown", "scroll"]
+		interactionEvents.forEach((event) =>
+			document.addEventListener(event, playAudio, { once: true }),
+		)
 
-		// Clean up on unmount
 		return () => {
-			if (audioRef.current) {
-				audioRef.current.pause()
-				audioRef.current = null
-			}
-
-			document.removeEventListener("click", handleUserInteraction)
-			document.removeEventListener("touchstart", handleUserInteraction)
-			document.removeEventListener("keydown", handleUserInteraction)
-			document.removeEventListener("scroll", handleUserInteraction)
+			audio.pause()
+			audio.src = ""
+			interactionEvents.forEach((event) =>
+				document.removeEventListener(event, playAudio),
+			)
 		}
-	}, [audioSrc, isPlaying, attemptAutoplay])
+	}, [audioSrc, autoplayAttempted])
 
 	const toggleSound = () => {
-		if (!audioRef.current) return
-
+		const audio = audioRef.current
 		if (!isPlaying) {
-			// Start playing if currently paused
-			audioRef.current.play()
+			audio.play()
 			setIsPlaying(true)
 			setIsMuted(false)
 		} else {
-			// Toggle mute/unmute if playing
-			audioRef.current.muted = !audioRef.current.muted
+			audio.muted = !audio.muted
 			setIsMuted(!isMuted)
 		}
 	}
