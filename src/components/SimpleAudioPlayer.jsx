@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useRef, useCallback } from "react"
 import { Music, Volume2, VolumeX } from "lucide-react"
 
 const SimpleAudioPlayer = ({ audioSrc = "/audio/wedding-song.mp3" }) => {
@@ -9,8 +9,8 @@ const SimpleAudioPlayer = ({ audioSrc = "/audio/wedding-song.mp3" }) => {
 	const [autoplayAttempted, setAutoplayAttempted] = useState(false)
 	const audioRef = useRef(null)
 
-	// Function to attempt autoplay
-	const attemptAutoplay = () => {
+	// Function to attempt autoplay - wrapped in useCallback
+	const attemptAutoplay = useCallback(() => {
 		if (!audioRef.current || autoplayAttempted) return
 
 		// Set autoplay attempted flag
@@ -30,7 +30,7 @@ const SimpleAudioPlayer = ({ audioSrc = "/audio/wedding-song.mp3" }) => {
 					setIsPlaying(false)
 				})
 		}
-	}
+	}, [autoplayAttempted])
 
 	useEffect(() => {
 		audioRef.current = new Audio(audioSrc)
@@ -69,7 +69,7 @@ const SimpleAudioPlayer = ({ audioSrc = "/audio/wedding-song.mp3" }) => {
 			document.removeEventListener("keydown", handleUserInteraction)
 			document.removeEventListener("scroll", handleUserInteraction)
 		}
-	}, [audioSrc, isPlaying])
+	}, [audioSrc, isPlaying, attemptAutoplay])
 
 	const toggleSound = () => {
 		if (!audioRef.current) return

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useRef, useCallback } from "react"
 import { Music, Volume2, VolumeX } from "lucide-react"
 
 const AutoAudioPlayer = ({
@@ -20,8 +20,8 @@ const AutoAudioPlayer = ({
 		"mousemove",
 	]
 
-	// Function to attempt playing audio
-	const playAudio = () => {
+	// Function to attempt playing audio - wrapped in useCallback
+	const playAudio = useCallback(() => {
 		if (!audioRef.current || playAttemptRef.current) return
 
 		playAttemptRef.current = true
@@ -42,20 +42,20 @@ const AutoAudioPlayer = ({
 					setIsPlaying(false)
 				})
 		}
-	}
+	}, []) // Empty dependency array as it only uses refs and setters
 
-	// Set up and remove event listeners for user interaction
-	const setupEventListeners = () => {
+	// Set up and remove event listeners for user interaction - wrapped in useCallback
+	const setupEventListeners = useCallback(() => {
 		interactionEvents.forEach((event) => {
 			document.addEventListener(event, playAudio, { once: true })
 		})
-	}
+	}, [playAudio, interactionEvents])
 
-	const removeEventListeners = () => {
+	const removeEventListeners = useCallback(() => {
 		interactionEvents.forEach((event) => {
 			document.removeEventListener(event, playAudio)
 		})
-	}
+	}, [playAudio, interactionEvents])
 
 	useEffect(() => {
 		// Create audio element
@@ -89,7 +89,14 @@ const AutoAudioPlayer = ({
 				audioRef.current = null
 			}
 		}
-	}, [audioSrc, initialVolume])
+	}, [
+		audioSrc,
+		initialVolume,
+		playAudio,
+		setupEventListeners,
+		removeEventListeners,
+		isPlaying,
+	])
 
 	// Toggle mute/unmute
 	const toggleSound = () => {

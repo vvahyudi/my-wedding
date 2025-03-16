@@ -31,15 +31,17 @@ const MainPage = () => {
 	}
 	if (isLoading) {
 		return (
-			<div className="flex items-center justify-center min-h-screen bg-text-primary">
-				<div className="text-center text-white p-8 max-w-md">
-					<h1 className={`${gwendolynFont.className} text-5xl mb-6`}>
-						Ati & Yudi
-					</h1>
-					<p className={`${playfairFont.className} mb-8`}>
-						We&apos;re preparing our wedding invitation for you...
-					</p>
-					<div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent mx-auto"></div>
+			<div className="@container max-w-sm mx-auto rounded-lg shadow-2xl">
+				<div className="flex items-center justify-center min-h-screen bg-text-primary">
+					<div className="text-center text-white p-8 max-w-md">
+						<h1 className={`${gwendolynFont.className} text-5xl mb-6`}>
+							Ati & Yudi
+						</h1>
+						<p className={`${playfairFont.className} mb-8`}>
+							We&apos;re preparing our wedding invitation for you...
+						</p>
+						<div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent mx-auto"></div>
+					</div>
 				</div>
 			</div>
 		)

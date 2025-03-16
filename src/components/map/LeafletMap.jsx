@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useCallback } from "react"
 import "leaflet/dist/leaflet.css"
 
 // Simple utility function to merge classNames
@@ -70,7 +70,7 @@ export function LeafletMap({
 				markerLayerRef.current = null
 			}
 		}
-	}, [])
+	}, [center, zoom, onClick])
 
 	// Update map center and zoom when props change
 	useEffect(() => {

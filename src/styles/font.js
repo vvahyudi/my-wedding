@@ -4,6 +4,7 @@ import {
 	Noto_Sans_Arabic,
 	Scheherazade_New,
 	Gwendolyn,
+	Quicksand,
 } from "next/font/google"
 
 const imperialFont = Imperial_Script({ subsets: ["latin"], weight: ["400"] })
@@ -11,6 +12,10 @@ const playfairFont = Playfair_Display({
 	subsets: ["latin"],
 	weight: ["400", "500", "600", "700", "800", "900"],
 	style: ["italic", "normal"],
+})
+const quicksandFont = Quicksand({
+	subsets: ["latin"],
+	weight: ["400", "500", "600", "700"],
 })
 const notoArabicFont = Noto_Sans_Arabic({
 	subsets: ["arabic"],
@@ -27,6 +32,7 @@ const gwendolynFont = Gwendolyn({
 
 export {
 	imperialFont,
+	quicksandFont,
 	playfairFont,
 	notoArabicFont,
 	scheherazadeFont,

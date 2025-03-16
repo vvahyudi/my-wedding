@@ -2,6 +2,7 @@ import "@/styles/globals.css"
 import Providers from "@/components/Providers"
 import { Analytics } from "@vercel/analytics/next"
 import AutoAudioPlayer from "@/components/AutoAudioPlayer"
+import Footer from "@/components/Footer"
 
 export const metadata = {
 	title: "Ati & Yudi Wedding Invitation",
@@ -20,6 +21,7 @@ export default function RootLayout({ children }) {
 					/>
 					<Analytics />
 				</Providers>
+				<Footer />
 			</body>
 		</html>
 	)
