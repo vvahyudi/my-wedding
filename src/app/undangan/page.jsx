@@ -14,10 +14,12 @@ const MainPage = () => {
 			setIsLoading(false)
 		}, 2000)
 	}, [])
-	const entranceIn =
-		"motion-opacity-in-0 motion-translate-y-in-100 motion-blur-in-md motion-duration-3000"
+
 	const [markers, setMarkers] = useState([
-		{ position: [51.505, -0.09], title: "London" },
+		{
+			position: [-7.084052705527449, 113.67765395485284],
+			title: "Pernikahan Ati & Yudi",
+		},
 	])
 	const handleMapClick = (e) => {
 		const { lat, lng } = e.latlng
@@ -31,7 +33,7 @@ const MainPage = () => {
 	}
 	if (isLoading) {
 		return (
-			<div className="@container max-w-sm mx-auto rounded-lg shadow-2xl">
+			<div className="@container max-w-md mx-auto rounded-lg shadow-2xl">
 				<div className="flex items-center justify-center min-h-screen bg-text-primary">
 					<div className="text-center text-white p-8 max-w-md">
 						<h1 className={`${gwendolynFont.className} text-5xl mb-6`}>
@@ -136,7 +138,7 @@ const MainPage = () => {
 								Akad Nikah
 							</h3>
 							<p
-								className={`${playfairFont.className} text-base font-semibold bg-text-primary`}
+								className={`${playfairFont.className} text-base font-semibold text-text-primary`}
 							>
 								Rabu, 16 April 2025
 							</p>
@@ -151,7 +153,7 @@ const MainPage = () => {
 								Resepsi Pernikahan
 							</h3>
 							<p
-								className={`${playfairFont.className} text-base font-semibold bg-text-primary`}
+								className={`${playfairFont.className} text-base font-semibold text-text-primary`}
 							>
 								Rabu, 16 April 2025
 							</p>
@@ -176,7 +178,7 @@ const MainPage = () => {
 							<MapContainer
 								buttonText="Buka Map"
 								closeButtonText="Tutup Map"
-								center={[51.505, -0.09]}
+								center={[-7.084052705527449, 113.67765395485284]}
 								zoom={13}
 								markers={markers}
 								onClick={handleMapClick}

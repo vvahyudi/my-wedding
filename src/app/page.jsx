@@ -5,7 +5,6 @@ import { gwendolynFont, playfairFont } from "@/styles/font"
 import Link from "next/link"
 import Image from "next/image"
 import AutoAudioPlayer from "@/components/AutoAudioPlayer"
-import Footer from "@/components/Footer"
 
 export default function WelcomePage() {
 	const [isLoading, setIsLoading] = useState(true)
@@ -49,7 +48,7 @@ export default function WelcomePage() {
 	// Preload/welcome screen
 	if (isLoading) {
 		return (
-			<div className="@container max-w-sm mx-auto rounded-lg min-h-screen shadow-2xl">
+			<div className="@container max-w-md mx-auto rounded-lg min-h-screen shadow-2xl">
 				<div className="flex items-center justify-center h-screen bg-text-primary">
 					<div className="text-center text-white p-8 max-w-md">
 						<h1 className={`${gwendolynFont.className} text-5xl mb-6`}>
@@ -66,7 +65,7 @@ export default function WelcomePage() {
 	}
 
 	return (
-		<div className="@container max-w-sm mx-auto rounded-lg shadow-2xl">
+		<div className="@container max-w-md mx-auto rounded-lg shadow-2xl">
 			<div className="relative h-screen w-full bg-[url('/latar.png')] bg-cover bg-center bg-no-repeat flex flex-col">
 				{/* Top-left floral decoration */}
 				<div className="absolute top-0 w-full">

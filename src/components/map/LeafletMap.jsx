@@ -1,13 +1,12 @@
 "use client"
 
-import { useEffect, useRef, useState, useCallback } from "react"
+import { useEffect, useRef, useState } from "react"
 import "leaflet/dist/leaflet.css"
 
-// Simple utility function to merge classNames
 const classNames = (...classes) => classes.filter(Boolean).join(" ")
 
 export function LeafletMap({
-	center = [51.505, -0.09], // Default to London [lat, lng]
+	center = [-7.084052705527449, 113.67765395485284], // Koordinat baru
 	zoom = 13,
 	markers = [],
 	onClick,
@@ -20,49 +19,52 @@ export function LeafletMap({
 	const markerLayerRef = useRef(null)
 	const [isMapReady, setIsMapReady] = useState(false)
 
-	// Initialize the map when the component mounts
 	useEffect(() => {
-		// Dynamic import to avoid SSR issues
+		let mapInstance = null
+
 		const initializeMap = async () => {
-			// Import Leaflet dynamically to avoid SSR issues
-			const L = (await import("leaflet")).default
+			try {
+				const L = (await import("leaflet")).default
 
-			// Fix the icon paths issue in Leaflet
-			delete L.Icon.Default.prototype._getIconUrl
-			L.Icon.Default.mergeOptions({
-				iconRetinaUrl: "/leaflet/marker-icon-2x.png",
-				iconUrl: "/leaflet/marker-icon.png",
-				shadowUrl: "/leaflet/marker-shadow.png",
-			})
-			if (!mapRef.current) return
+				// Fix for marker icons
+				delete L.Icon.Default.prototype._getIconUrl
+				L.Icon.Default.mergeOptions({
+					iconRetinaUrl: "/leaflet/marker-icon-2x.png",
+					iconUrl: "/leaflet/marker-icon.png",
+					shadowUrl: "/leaflet/marker-shadow.png",
+				})
 
-			// Create map if it doesn't exist
-			if (!mapInstanceRef.current) {
-				mapInstanceRef.current = L.map(mapRef.current).setView(center, zoom)
+				if (!mapRef.current) return
 
-				// Add tile layer (OpenStreetMap)
-				L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-					attribution:
-						'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-					maxZoom: 19,
-				}).addTo(mapInstanceRef.current)
+				// Inisialisasi peta jika belum ada
+				if (!mapInstanceRef.current) {
+					mapInstance = L.map(mapRef.current).setView(center, zoom)
+					mapInstanceRef.current = mapInstance
 
-				// Create a layer group for markers
-				markerLayerRef.current = L.layerGroup().addTo(mapInstanceRef.current)
+					L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+						attribution:
+							'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+						maxZoom: 19,
+					}).addTo(mapInstance)
 
-				// Add click event handler
-				if (onClick) {
-					mapInstanceRef.current.on("click", (e) => {
-						onClick(e)
-					})
+					markerLayerRef.current = L.layerGroup().addTo(mapInstance)
+
+					if (onClick) {
+						mapInstance.on("click", (e) => {
+							onClick(e)
+						})
+					}
+
+					setIsMapReady(true)
 				}
-
-				setIsMapReady(true)
+			} catch (error) {
+				console.error("Failed to initialize Leaflet map:", error)
 			}
 		}
+
 		initializeMap()
 
-		// Cleanup when component unmounts
+		// Cleanup saat komponen di-unmount
 		return () => {
 			if (mapInstanceRef.current) {
 				mapInstanceRef.current.remove()
@@ -72,46 +74,53 @@ export function LeafletMap({
 		}
 	}, [center, zoom, onClick])
 
-	// Update map center and zoom when props change
 	useEffect(() => {
-		if (!mapInstanceRef.current) return
-
-		mapInstanceRef.current.setView(center, zoom)
+		if (mapInstanceRef.current) {
+			mapInstanceRef.current.setView(center, zoom)
+		}
 	}, [center, zoom])
 
-	// Update markers when they change
 	useEffect(() => {
 		const updateMarkers = async () => {
 			if (!isMapReady || !markerLayerRef.current) return
 
 			const L = (await import("leaflet")).default
+			markerLayerRef.current.clearLayers() // Hapus semua marker sebelumnya
 
-			// Clear existing markers
-			markerLayerRef.current.clearLayers()
-
-			// Add new markers
 			markers.forEach((marker) => {
 				const { position, title } = marker
 				const [lat, lng] = Array.isArray(position)
 					? position
 					: [position.lat, position.lng]
-				L.marker([lat, lng])
+
+				// Tambahkan marker baru
+				L.marker([lat, lng], {
+					icon: L.icon({
+						iconUrl: "/leaflet/marker-icon.png",
+						iconRetinaUrl: "/leaflet/marker-icon-2x.png",
+						shadowUrl: "/leaflet/marker-shadow.png",
+						iconSize: [25, 41],
+						iconAnchor: [12, 41],
+						popupAnchor: [1, -34],
+						shadowSize: [41, 41],
+					}),
+				})
 					.bindPopup(title || `Marker at ${lat}, ${lng}`)
 					.addTo(markerLayerRef.current)
+					.openPopup()
 			})
 		}
+
 		updateMarkers()
 	}, [markers, isMapReady])
 
-	// When map container is resized, we need to invalidate the map size
 	useEffect(() => {
 		if (mapInstanceRef.current) {
-			// Needed to fix map display issues when showing/hiding
 			setTimeout(() => {
 				mapInstanceRef.current.invalidateSize()
 			}, 100)
 		}
-	}, [className]) // This will run when className changes (which might indicate visibility changes)
+	}, [className])
 
 	return (
 		<div

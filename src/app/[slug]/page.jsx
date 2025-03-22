@@ -30,7 +30,7 @@ export default function Home() {
 		"motion-opacity-in-0 motion-translate-y-in-100 motion-blur-in-md motion-duration-4000"
 	if (isLoading) {
 		return (
-			<div className="@container max-w-sm mx-auto rounded-lg shadow-2xl">
+			<div className="@container max-w-md mx-auto rounded-lg shadow-2xl">
 				<div className="flex items-center justify-center min-h-screen bg-text-primary">
 					<div className="text-center text-white p-8 max-w-md">
 						<h1 className={`${gwendolynFont.className} text-5xl mb-6`}>
@@ -47,7 +47,7 @@ export default function Home() {
 	}
 	if (showNotFound) {
 		return (
-			<div className="h-screen w-full flex flex-col items-center justify-center bg-[url('/latar.png')] bg-cover bg-center bg-no-repeat p-4">
+			<div className="h-screen max-w-md flex flex-col items-center justify-center bg-[url('/latar.png')] bg-cover bg-center bg-no-repeat p-4">
 				<div className="bg-white/80 rounded-lg p-6 max-w-md text-center shadow-lg">
 					<h1
 						className={`${playfairFont.className} text-2xl font-bold text-text-primary mb-4`}
@@ -71,7 +71,7 @@ export default function Home() {
 	}
 
 	return (
-		<div className="@container max-w-sm mx-auto rounded-lg shadow-2xl">
+		<div className="@container max-w-md mx-auto rounded-lg shadow-2xl">
 			<div className="relative h-screen w-full bg-[url('/latar.png')] bg-cover bg-center bg-no-repeat flex flex-col">
 				{/* Top-left floral decoration */}
 				<div className="absolute top-0 w-full">
@@ -122,7 +122,7 @@ export default function Home() {
 					</h2>
 
 					<p
-						className={`${playfairFont.className} text-lg font-medium bg-text-primary text-white px-4 py-1 rounded-md`}
+						className={`${playfairFont.className} text-xl font-bold text-text-primary  px-4 py-1 rounded-md`}
 					>
 						Rabu, 16 April 2025
 					</p>
@@ -137,14 +137,14 @@ export default function Home() {
 								<div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-700"></div>
 							</div>
 						) : data && data.data ? (
-							<h1 className={`text-xl font-extrabold italic`}>
+							<h1 className={`text-2xl font-extrabold italic py-2`}>
 								{data.data.name}
 							</h1>
 						) : null}
 					</div>
 					<Link href="/undangan">
 						<button
-							className={`${playfairFont.className} text-sm flex items-center motion-preset-pulse px-6 py-2 border-2 text-white hover:text-text-primary border-emerald-700 hover:border-emerald-100 bg-text-primary rounded-full hover:bg-emerald-100 transition-colors`}
+							className={`${playfairFont.className} text-sm flex items-center motion-preset-pulse px-2 py-2 border-2 text-white hover:text-text-primary border-emerald-700 hover:border-emerald-100 bg-text-primary rounded-full hover:bg-emerald-100 transition-colors`}
 							onMouseEnter={() => setIsHovered(true)}
 							onMouseLeave={() => setIsHovered(false)}
 						>
