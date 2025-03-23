@@ -278,17 +278,17 @@ const GuestList = () => {
 								<button
 									onClick={handlePrevPage}
 									disabled={page === 1}
-									className="px-2 sm:px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50 text-sm"
+									className="px-2 sm:px-3 py-1 bg-text-primary text-white rounded hover:bg-emerald-900 disabled:opacity-50 text-sm"
 								>
 									Previous
 								</button>
-								<span className="px-2 sm:px-3 py-1 bg-gray-100 rounded text-sm">
+								<span className="px-2 sm:px-3 py-1 bg-green-500 text-white rounded text-sm">
 									{page}/{data.pagination.totalPage || 1}
 								</span>
 								<button
 									onClick={handleNextPage}
 									disabled={page >= data.pagination.totalPage}
-									className="px-2 sm:px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50 text-sm"
+									className="px-2 sm:px-3 py-1 bg-text-primary text-white rounded hover:bg-emerald-900 disabled:opacity-50 text-sm"
 								>
 									Next
 								</button>
