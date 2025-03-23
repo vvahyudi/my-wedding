@@ -15,7 +15,7 @@ const WhatsAppButton = ({
 }) => {
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [message, setMessage] = useState(
-		`Assalamu'alaikum Wr. Wb.
+		`ٱلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ ٱللَّٰهِ وَبَرَكَاتُهُ
 
 Kepada Yth. ${guestName}
 
@@ -27,7 +27,7 @@ Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i
 
 Terima kasih.
 
-Wassalamu'alaikum Wr. Wb.`,
+وَالسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللّٰهِ وَبَرَكَاتُهُ`,
 	)
 
 	// Sanitize phone number - remove any non-digit characters
