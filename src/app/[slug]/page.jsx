@@ -138,7 +138,7 @@ export default function Home() {
 							</div>
 						) : data && data.data ? (
 							<h1 className={`text-2xl font-extrabold italic py-2`}>
-								{data.data.name.replace(/'/g, "&#39;")}
+								{data.data.name}
 							</h1>
 						) : null}
 					</div>
