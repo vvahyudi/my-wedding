@@ -160,7 +160,7 @@ const MainPage = () => {
 							<p
 								className={`${playfairFont.className} text-base font-semibold `}
 							>
-								Pukul 10.00 WIB - Selesai
+								Pukul 11.30 WIB - Selesai
 							</p>
 						</div>
 						<div className="flex flex-col text-center items-center gap-2">

@@ -1,10 +1,12 @@
 "use client"
 
 import React, { useState } from "react"
-import { playfairFont, gwendolynFont } from "@/styles/font"
+import { playfairFont, gwendolynFont, quicksandFont } from "@/styles/font"
 import { useCommentsListQuery } from "@/hooks/useGuestComment"
 import { useMutation } from "@tanstack/react-query"
 import { postComment } from "@/utils/api"
+import { format } from "date-fns"
+import { id } from "date-fns/locale"
 
 // Helper function to get initials from name
 const getInitials = (name) => {
@@ -67,7 +69,9 @@ const CommentSection = () => {
 	const postCommentMutation = useMutation({
 		mutationFn: postComment,
 	})
-
+	const formatDate = (dateString) => {
+		return format(new Date(dateString), "HH:mm, dd MMM yyyy", { locale: id })
+	}
 	// Submit function with API integration
 	const handleSubmit = (e) => {
 		e.preventDefault()
@@ -158,9 +162,11 @@ const CommentSection = () => {
 													{comment.name}
 												</span>
 											</p>
-											<p className="text-xs text-gray-500">
+											<p
+												className={`${quicksandFont.className} text-xs text-gray-500`}
+											>
 												{comment.created_at
-													? new Date(comment.created_at).toLocaleDateString()
+													? formatDate(comment.created_at)
 													: ""}
 											</p>
 										</div>
